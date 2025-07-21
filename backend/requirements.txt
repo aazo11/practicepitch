@@ -2,4 +2,8 @@ fastapi
 uvicorn
 requests
 beautifulsoup4
-pydantic
+pydantic[email]
+sqlalchemy
+psycopg2-binary
+python-dotenv
+alembic
