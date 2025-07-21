@@ -5,6 +5,7 @@ from typing import Optional
 import requests
 from bs4 import BeautifulSoup
 import json
+from sqlmodel import Field, Session, SQLModel, create_engine
 
 app = FastAPI()
 app.add_middleware(
@@ -24,10 +25,25 @@ class Application(BaseModel):
     email: EmailStr
     meeting_time: str
 
+class ApplicationEntry(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    company_name: str
+    website: str
+    linkedin: str
+    pitch_deck: str
+    github: Optional[str] = None
+    email: str
+    meeting_time: str
+
+engine = create_engine("sqlite:///applications.db")
+SQLModel.metadata.create_all(engine)
+
 @app.post("/api/apply")
 async def apply(application: Application, background_tasks: BackgroundTasks):
-    with open("applications.json", "a") as f:
-        f.write(json.dumps(application.model_dump()) + "\n")
+    with Session(engine) as session:
+        entry = ApplicationEntry(**application.model_dump())
+        session.add(entry)
+        session.commit()
     background_tasks.add_task(crawl_company, application)
     zoom_link = create_zoom_meeting(application)
     send_invite_email(application.email, zoom_link, application.meeting_time)

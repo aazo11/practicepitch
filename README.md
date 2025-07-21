@@ -12,7 +12,7 @@ This project is a prototype service that allows startup founders to practice the
 Python 3.11 is required. Install dependencies:
 
 ```bash
-pip install fastapi uvicorn requests pydantic beautifulsoup4
+pip install fastapi uvicorn requests pydantic beautifulsoup4 sqlmodel
 ```
 
 Run the development server:
@@ -20,6 +20,9 @@ Run the development server:
 ```bash
 uvicorn backend.app:app --reload
 ```
+
+Form submissions are stored in a SQLite database `applications.db` which is
+created automatically on first run.
 
 ## Running the frontend
 
